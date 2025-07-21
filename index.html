@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Widget SCS Prediksi</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>🔮 Widget SCS Prediksi</h2>
+
+  <label>Nama Lengkap:</label>
+  <input type="text" id="nama" placeholder="Contoh: Siti Aminah">
+
+  <label>Tanggal Lahir:</label>
+  <input type="date" id="tanggal">
+
+  <label>Jenis Kelamin:</label>
+  <select id="gender">
+    <option value="L">Laki-laki</option>
+    <option value="P">Perempuan</option>
+  </select>
+
+  <button onclick="proses()">🔍 Lihat Prediksi</button>
+  <div class="output" id="hasil"></div>
+
+<script>
+function angkaDariNama(nama) {
+  let total = 0;
+  for (let i = 0; i < nama.length; i++) {
+    const char = nama[i].toUpperCase();
+    if (char >= 'A' && char <= 'Z') {
+      total += char.charCodeAt(0) - 64;
+    }
+  }
+  return total;
+}
+
+const dataWetonValid = {
+  "1990-08-01": { hari: "Rabu", pasaran: "Legi", neptu: 12 },
+  "1945-08-17": { hari: "Jumat", pasaran: "Pahing", neptu: 15 },
+  "2000-01-01": { hari: "Sabtu", pasaran: "Pon", neptu: 16 }
+};
+
+function cariWeton(tanggal) {
+  const key = new Date(tanggal).toISOString().slice(0, 10);
+  if (dataWetonValid[key]) {
+    return dataWetonValid[key];
+  } else {
+    return { hari: "(tidak ditemukan)", pasaran: "-", neptu: 0 };
+  }
+}
+
+function zodiak(tgl) {
+  const date = new Date(tgl);
+  const d = date.getDate(), m = date.getMonth() + 1;
+  const z = [
+    [20, "Capricorn"], [19, "Aquarius"], [20, "Pisces"], [20, "Aries"],
+    [21, "Taurus"], [21, "Gemini"], [23, "Cancer"], [23, "Leo"],
+    [23, "Virgo"], [23, "Libra"], [22, "Scorpio"], [22, "Sagitarius"], [31, "Capricorn"]
+  ];
+  return (d < z[m-1][0]) ? z[m-1][1] : z[m][1];
+}
+
+function shio(tgl) {
+  const tahun = new Date(tgl).getFullYear();
+  const shioList = ["Kambing","Monyet","Ayam","Anjing","Babi","Tikus","Kerbau","Macan","Kelinci","Naga","Ular","Kuda"];
+  return shioList[(tahun - 1900) % 12];
+}
+
+function proses() {
+  const nama = document.getElementById("nama").value;
+  const tanggal = document.getElementById("tanggal").value;
+  const gender = document.getElementById("gender").value;
+  if (!nama || !tanggal) {
+    alert("Isi data lengkap terlebih dahulu!");
+    return;
+  }
+
+  const weton = cariWeton(tanggal);
+  const totalNama = angkaDariNama(nama);
+  const AR = (totalNama + weton.neptu) % 999;
+  const CC = (totalNama * weton.neptu) % 100;
+  const warnaHoki = ['Merah','Kuning','Hijau','Ungu','Putih','Hitam'][weton.neptu % 6];
+
+  const hasil = `📌 Nama: ${nama}
+🗓️ Tanggal Lahir: ${tanggal}
+👤 Gender: ${gender === 'L' ? 'Laki-laki' : 'Perempuan'}
+
+🌟 Zodiak: ${zodiak(tanggal)}
+🐲 Shio: ${shio(tanggal)}
+📆 Weton: ${weton.hari} ${weton.pasaran} (Neptu: ${weton.neptu})
+
+💫 Harani: ${totalNama % 100}
+🧿 AR Time: ${AR}
+🔮 CC Code: ${CC}
+🎯 Arah Rezeki: ${(weton.neptu % 4 == 0) ? 'Barat' : (weton.neptu % 3 == 0) ? 'Utara' : (weton.neptu % 2 == 0) ? 'Timur' : 'Selatan'}
+❤️ Asmara: ${CC % 2 === 0 ? 'Stabil & Romantis' : 'Perlu Komunikasi Jujur'}
+🎨 Warna Hoki: ${warnaHoki}`;
+
+  document.getElementById("hasil").textContent = hasil;
+}
+</script>
+</body>
+</html>
